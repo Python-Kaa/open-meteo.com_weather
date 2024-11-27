@@ -1,0 +1,1412 @@
+{
+    "zabbix_export": {
+        "version": "6.4",
+        "template_groups": [
+            {
+                "uuid": "7df96b18c230490a9a0a9e2307226338",
+                "name": "Templates"
+            }
+        ],
+        "templates": [
+            {
+                "uuid": "bd5c020b77ed47898e1e4c62243ca246",
+                "template": "Weather by open-meteo.com",
+                "name": "Weather by open-meteo.com",
+                "description": "https://open-meteo.com/en/docs#current=temperature_2m,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,daylight_duration,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant&wind_speed_unit=ms&timeformat=unixtime&timezone=Europe%2FMoscow&forecast_days=3",
+                "groups": [
+                    {
+                        "name": "Templates"
+                    }
+                ],
+                "items": [
+                    {
+                        "uuid": "7cd9666e705a43dea4af85fe1563e65c",
+                        "name": "Get-Weather",
+                        "type": "HTTP_AGENT",
+                        "key": "openmeteo[weather.get]",
+                        "delay": "15m",
+                        "value_type": "CHAR",
+                        "trends": "0",
+                        "url": "https://api.open-meteo.com/v1/forecast",
+                        "query_fields": [
+                            {
+                                "name": "latitude",
+                                "value": "{$LATITUDE}"
+                            },
+                            {
+                                "name": "longitude",
+                                "value": "{$LONGITUDE}"
+                            },
+                            {
+                                "name": "current",
+                                "value": "temperature_2m,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m"
+                            },
+                            {
+                                "name": "daily",
+                                "value": "weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,daylight_duration,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant"
+                            },
+                            {
+                                "name": "wind_speed_unit",
+                                "value": "ms"
+                            },
+                            {
+                                "name": "timeformat",
+                                "value": "unixtime"
+                            },
+                            {
+                                "name": "timezone",
+                                "value": "{$TIMEZONE}"
+                            },
+                            {
+                                "name": "forecast_days",
+                                "value": "{$FORECAST_DAYS}"
+                            }
+                        ],
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "0119ed0e2dee43788db4e49c86e5623e",
+                        "name": "\u0421\u0435\u0439\u0447\u0430\u0441 - \u041e\u0431\u043b\u0430\u0447\u043d\u043e\u0441\u0442\u044c",
+                        "type": "DEPENDENT",
+                        "key": "openmeteo[weather.now.cloud]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "%",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.current.cloud_cover"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "openmeteo[weather.get]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            },
+                            {
+                                "tag": "DateTime",
+                                "value": "\u0421\u0435\u0439\u0447\u0430\u0441"
+                            },
+                            {
+                                "tag": "Weather Block",
+                                "value": "General"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "014fb7806227420491b3de826d8cac87",
+                        "name": "\u0421\u0435\u0439\u0447\u0430\u0441 - \u041f\u043e\u0433\u043e\u0434\u0430",
+                        "type": "DEPENDENT",
+                        "key": "openmeteo[weather.now.code]",
+                        "delay": "0",
+                        "valuemap": {
+                            "name": "Weather Code"
+                        },
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.current.weather_code"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "openmeteo[weather.get]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            },
+                            {
+                                "tag": "DateTime",
+                                "value": "\u0421\u0435\u0439\u0447\u0430\u0441"
+                            },
+                            {
+                                "tag": "Weather Block",
+                                "value": "General"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "f3f130c780da4d05ad446b931983222f",
+                        "name": "\u0421\u0435\u0439\u0447\u0430\u0441 - \u0412\u043b\u0430\u0436\u043d\u043e\u0441\u0442\u044c",
+                        "type": "DEPENDENT",
+                        "key": "openmeteo[weather.now.humidity]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "%",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.current.relative_humidity_2m"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "openmeteo[weather.get]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            },
+                            {
+                                "tag": "DateTime",
+                                "value": "\u0421\u0435\u0439\u0447\u0430\u0441"
+                            },
+                            {
+                                "tag": "Weather Block",
+                                "value": "General"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "3382d47fdb794d34a29fc97eb8a6355a",
+                        "name": "\u0421\u0435\u0439\u0447\u0430\u0441 - \u041e\u0441\u0430\u0434\u043a\u0438 (\u0434\u043e\u0436\u0434\u044c)",
+                        "type": "DEPENDENT",
+                        "key": "openmeteo[weather.now.precipitation.rain]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "!\u043c\u043c",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.current.rain"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "openmeteo[weather.get]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            },
+                            {
+                                "tag": "DateTime",
+                                "value": "\u0421\u0435\u0439\u0447\u0430\u0441"
+                            },
+                            {
+                                "tag": "Weather Block",
+                                "value": "\u041e\u0441\u0430\u0434\u043a\u0438"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "d254a03d0b81495384113139fe5f7c0f",
+                        "name": "\u0421\u0435\u0439\u0447\u0430\u0441 - \u041e\u0441\u0430\u0434\u043a\u0438 (\u043b\u0438\u0432\u0435\u043d\u044c)",
+                        "type": "DEPENDENT",
+                        "key": "openmeteo[weather.now.precipitation.showers]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "!\u043c\u043c",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.current.showers"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "openmeteo[weather.get]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            },
+                            {
+                                "tag": "DateTime",
+                                "value": "\u0421\u0435\u0439\u0447\u0430\u0441"
+                            },
+                            {
+                                "tag": "Weather Block",
+                                "value": "\u041e\u0441\u0430\u0434\u043a\u0438"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "b5da6f7bd8764e0c814bc06833f22c1a",
+                        "name": "\u0421\u0435\u0439\u0447\u0430\u0441 - \u041e\u0441\u0430\u0434\u043a\u0438 (\u0441\u043d\u0435\u0433)",
+                        "type": "DEPENDENT",
+                        "key": "openmeteo[weather.now.precipitation.snowfall]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "!\u0441\u043c",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.current.snowfall"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "openmeteo[weather.get]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            },
+                            {
+                                "tag": "DateTime",
+                                "value": "\u0421\u0435\u0439\u0447\u0430\u0441"
+                            },
+                            {
+                                "tag": "Weather Block",
+                                "value": "\u041e\u0441\u0430\u0434\u043a\u0438"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "8643e01beb5e4ac69f9626829dc8917e",
+                        "name": "\u0421\u0435\u0439\u0447\u0430\u0441 - \u041e\u0441\u0430\u0434\u043a\u0438",
+                        "type": "DEPENDENT",
+                        "key": "openmeteo[weather.now.precipitation.sum]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "!\u043c\u043c",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.current.precipitation"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "openmeteo[weather.get]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            },
+                            {
+                                "tag": "DateTime",
+                                "value": "\u0421\u0435\u0439\u0447\u0430\u0441"
+                            },
+                            {
+                                "tag": "Weather Block",
+                                "value": "\u041e\u0441\u0430\u0434\u043a\u0438"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "05bf6848bfb64a76b42d73812a577252",
+                        "name": "\u0421\u0435\u0439\u0447\u0430\u0441 - \u0414\u0430\u0432\u043b\u0435\u043d\u0438\u0435",
+                        "type": "DEPENDENT",
+                        "key": "openmeteo[weather.now.pressure.msl]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "!\u043c\u043c \u0440\u0442 \u0441\u0442",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.current.pressure_msl"
+                                ]
+                            },
+                            {
+                                "type": "MULTIPLIER",
+                                "parameters": [
+                                    "0.75006375541921"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "openmeteo[weather.get]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            },
+                            {
+                                "tag": "DateTime",
+                                "value": "\u0421\u0435\u0439\u0447\u0430\u0441"
+                            },
+                            {
+                                "tag": "Weather Block",
+                                "value": "General"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "cdff1fe3cd704b6c892f2888c17bccae",
+                        "name": "\u0421\u0435\u0439\u0447\u0430\u0441 - \u0422\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430",
+                        "type": "DEPENDENT",
+                        "key": "openmeteo[weather.now.temperature]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "\u00b0C",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.current.temperature_2m"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "openmeteo[weather.get]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            },
+                            {
+                                "tag": "DateTime",
+                                "value": "\u0421\u0435\u0439\u0447\u0430\u0441"
+                            },
+                            {
+                                "tag": "Weather Block",
+                                "value": "\u0422\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "e1da23757bb2423bbd26031d5ab8bffc",
+                        "name": "\u0421\u0435\u0439\u0447\u0430\u0441 - \u0412\u0435\u0442\u0435\u0440 (\u0430\u0437\u0438\u043c\u0443\u0442)",
+                        "type": "DEPENDENT",
+                        "key": "openmeteo[weather.now.wind.azimuth]",
+                        "delay": "0",
+                        "units": "\u00b0",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.current.wind_direction_10m"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "openmeteo[weather.get]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            },
+                            {
+                                "tag": "DateTime",
+                                "value": "\u0421\u0435\u0439\u0447\u0430\u0441"
+                            },
+                            {
+                                "tag": "Weather Block",
+                                "value": "\u0412\u0435\u0442\u0435\u0440"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "4722ad868831457cb162c1fec3a428d7",
+                        "name": "\u0421\u0435\u0439\u0447\u0430\u0441 - \u0412\u0435\u0442\u0435\u0440 (\u043d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435)",
+                        "type": "CALCULATED",
+                        "key": "openmeteo[weather.now.wind.direction.arrow]",
+                        "delay": "15m",
+                        "params": "floor((last(//openmeteo[weather.now.wind.azimuth])/45))",
+                        "valuemap": {
+                            "name": "\u041d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f \u0432\u0435\u0442\u0440\u0430 (\u0441\u0442\u0440\u0435\u043b\u043e\u0447\u043a\u0438)"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            },
+                            {
+                                "tag": "DateTime",
+                                "value": "\u0421\u0435\u0439\u0447\u0430\u0441"
+                            },
+                            {
+                                "tag": "Weather Block",
+                                "value": "\u0412\u0435\u0442\u0435\u0440"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "723583b08115493eb463aeb19de70996",
+                        "name": "\u0421\u0435\u0439\u0447\u0430\u0441 - \u0412\u0435\u0442\u0435\u0440 (\u043d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435)",
+                        "type": "CALCULATED",
+                        "key": "openmeteo[weather.now.wind.direction.direction]",
+                        "delay": "15m",
+                        "status": "DISABLED",
+                        "params": "floor((last(//openmeteo[weather.now.wind.azimuth])/22.5))",
+                        "valuemap": {
+                            "name": "\u041d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f \u0432\u0435\u0442\u0440\u0430"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            },
+                            {
+                                "tag": "DateTime",
+                                "value": "\u0421\u0435\u0439\u0447\u0430\u0441"
+                            },
+                            {
+                                "tag": "Weather Block",
+                                "value": "\u0412\u0435\u0442\u0435\u0440"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "9374a8374a16433cacdaa67ef2082d8a",
+                        "name": "\u0421\u0435\u0439\u0447\u0430\u0441 - \u0412\u0435\u0442\u0435\u0440 (\u043f\u043e\u0440\u044b\u0432\u044b)",
+                        "type": "DEPENDENT",
+                        "key": "openmeteo[weather.now.wind.gusts]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "!\u043c/\u0441",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.current.wind_gusts_10m"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "openmeteo[weather.get]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            },
+                            {
+                                "tag": "DateTime",
+                                "value": "\u0421\u0435\u0439\u0447\u0430\u0441"
+                            },
+                            {
+                                "tag": "Weather Block",
+                                "value": "\u0412\u0435\u0442\u0435\u0440"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "872982789acf45f0bf42ad9e424c7c05",
+                        "name": "\u0421\u0435\u0439\u0447\u0430\u0441 - \u0412\u0435\u0442\u0435\u0440 (\u0441\u043a\u043e\u0440\u043e\u0441\u0442\u044c)",
+                        "type": "DEPENDENT",
+                        "key": "openmeteo[weather.now.wind.speed]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "!\u043c/\u0441",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.current.wind_speed_10m"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "openmeteo[weather.get]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Weather"
+                            },
+                            {
+                                "tag": "DateTime",
+                                "value": "\u0421\u0435\u0439\u0447\u0430\u0441"
+                            },
+                            {
+                                "tag": "Weather Block",
+                                "value": "\u0412\u0435\u0442\u0435\u0440"
+                            }
+                        ]
+                    }
+                ],
+                "discovery_rules": [
+                    {
+                        "uuid": "422c8c156863438ba0a44100a6ce655a",
+                        "name": "Daily Weather Discovery",
+                        "type": "DEPENDENT",
+                        "key": "openmeteo[weather.discover]",
+                        "delay": "0",
+                        "lifetime": "0s",
+                        "item_prototypes": [
+                            {
+                                "uuid": "9264114e3a124f53b5f69eedcb7288be",
+                                "name": "+{#DATETIME} \u0434\u043d - \u041f\u043e\u0433\u043e\u0434\u0430",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.code]",
+                                "delay": "0",
+                                "valuemap": {
+                                    "name": "Weather Code"
+                                },
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.weather_code[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "General"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "da616efcd5414b8eae205cc086467ea6",
+                                "name": "+{#DATETIME} \u0434\u043d - \u041f\u043e\u0433\u043e\u0434\u0430 \u043d\u0430 \u0434\u0430\u0442\u0443",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.date]",
+                                "delay": "0",
+                                "units": "unixtime",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.time[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "General"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "c8c695cbd2534337be13b73a5720ce72",
+                                "name": "+{#DATETIME} \u0434\u043d - \u041f\u0440\u043e\u0434\u043e\u043b\u0436\u0438\u0442\u0435\u043b\u044c\u043d\u043e\u0441\u0442\u044c \u0434\u043d\u044f",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.duration]",
+                                "delay": "0",
+                                "value_type": "FLOAT",
+                                "units": "s",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.daylight_duration[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "General"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "872cfe05fb134dc59b112bc7dabbe5d9",
+                                "name": "+{#DATETIME} \u0434\u043d - \u041e\u0441\u0430\u0434\u043a\u0438 (\u043f\u0440\u043e\u0434\u043e\u043b\u0436\u0438\u0442\u0435\u043b\u044c\u043d\u043e\u0441\u0442\u044c)",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.precipitation.hours]",
+                                "delay": "0",
+                                "value_type": "FLOAT",
+                                "units": "!\u0447",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.precipitation_hours[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "\u041e\u0441\u0430\u0434\u043a\u0438"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "7c5d6f0ac66a456aaff4f6f7db68ef0b",
+                                "name": "+{#DATETIME} \u0434\u043d - \u041e\u0441\u0430\u0434\u043a\u0438 (\u0432\u0435\u0440\u043e\u044f\u0442\u043d\u043e\u0441\u0442\u044c)",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.precipitation.probability]",
+                                "delay": "0",
+                                "value_type": "FLOAT",
+                                "units": "%",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.precipitation_probability_max[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "\u041e\u0441\u0430\u0434\u043a\u0438"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "feb295c5077043348af4ff2e9e8e5832",
+                                "name": "+{#DATETIME} \u0434\u043d - \u041e\u0441\u0430\u0434\u043a\u0438 (\u0434\u043e\u0436\u0434\u044c)",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.precipitation.rain]",
+                                "delay": "0",
+                                "value_type": "FLOAT",
+                                "units": "!\u043c\u043c",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.rain_sum[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "\u041e\u0441\u0430\u0434\u043a\u0438"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "841856ef1fe144d387f5f0c9a8d49eeb",
+                                "name": "+{#DATETIME} \u0434\u043d - \u041e\u0441\u0430\u0434\u043a\u0438 (\u043b\u0438\u0432\u0435\u043d\u044c)",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.precipitation.showers]",
+                                "delay": "0",
+                                "value_type": "FLOAT",
+                                "units": "!\u043c\u043c",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.showers_sum[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "\u041e\u0441\u0430\u0434\u043a\u0438"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "2ab5dd98f9b04c179de09aaf6949f24c",
+                                "name": "+{#DATETIME} \u0434\u043d - \u041e\u0441\u0430\u0434\u043a\u0438 (\u0441\u043d\u0435\u0433)",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.precipitation.snowfall]",
+                                "delay": "0",
+                                "value_type": "FLOAT",
+                                "units": "!\u043c\u043c",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.snowfall_sum[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "\u041e\u0441\u0430\u0434\u043a\u0438"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "714b0f44416740798ee7caad865ad8c0",
+                                "name": "+{#DATETIME} \u0434\u043d - \u041e\u0441\u0430\u0434\u043a\u0438 (\u0441\u0443\u043c\u043c\u0430\u0440\u043d\u043e)",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.precipitation.sum]",
+                                "delay": "0",
+                                "value_type": "FLOAT",
+                                "units": "!\u043c\u043c",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.precipitation_sum[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "\u041e\u0441\u0430\u0434\u043a\u0438"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "57794499c8d34d169eaef2a53cad3a1f",
+                                "name": "+{#DATETIME} \u0434\u043d - \u0420\u0430\u0441\u0441\u0432\u0435\u0442",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.sunrise]",
+                                "delay": "0",
+                                "units": "unixtime",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.sunrise[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "General"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "dfd8cf74265d4f279b5a6a4d438596ae",
+                                "name": "+{#DATETIME} \u0434\u043d - \u0417\u0430\u043a\u0430\u0442",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.sunset]",
+                                "delay": "0",
+                                "units": "unixtime",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.sunset[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "General"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "7fa66d89f9904a719c66b33087d9942b",
+                                "name": "+{#DATETIME} \u0434\u043d - \u0422\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430 MAX",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.temperature.max]",
+                                "delay": "0",
+                                "value_type": "FLOAT",
+                                "units": "\u00b0C",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.temperature_2m_max[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "\u0422\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "1d8d1670a9124dfc96ac59d2149d9676",
+                                "name": "+{#DATETIME} \u0434\u043d - \u0422\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430 MIN",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.temperature.min]",
+                                "delay": "0",
+                                "value_type": "FLOAT",
+                                "units": "\u00b0C",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.temperature_2m_min[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "\u0422\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "9cd9b52d7f83480f9788478877bccff5",
+                                "name": "+{#DATETIME} \u0434\u043d - \u0412\u0435\u0442\u0435\u0440 (\u0430\u0437\u0438\u043c\u0443\u0442)",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.wind.azimuth]",
+                                "delay": "0",
+                                "units": "\u00b0",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.wind_direction_10m_dominant[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "\u0412\u0435\u0442\u0435\u0440"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "40ed7fc1f200493fae22ce04d41a2af3",
+                                "name": "+{#DATETIME} \u0434\u043d - \u0412\u0435\u0442\u0435\u0440 (\u043d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435)",
+                                "type": "CALCULATED",
+                                "key": "openmeteo[weather.today+{#DATETIME}.wind.direction.arrow]",
+                                "delay": "15",
+                                "params": "floor((last(//openmeteo[weather.today+{#DATETIME}.wind.azimuth])/45))",
+                                "valuemap": {
+                                    "name": "\u041d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f \u0432\u0435\u0442\u0440\u0430 (\u0441\u0442\u0440\u0435\u043b\u043e\u0447\u043a\u0438)"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "\u0412\u0435\u0442\u0435\u0440"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "a30e2c6cedd84708b49556eb6463b9ec",
+                                "name": "+{#DATETIME} \u0434\u043d - \u0412\u0435\u0442\u0435\u0440 (\u043d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435)",
+                                "type": "CALCULATED",
+                                "key": "openmeteo[weather.today+{#DATETIME}.wind.direction]",
+                                "delay": "15",
+                                "status": "DISABLED",
+                                "discover": "NO_DISCOVER",
+                                "params": "floor((last(//openmeteo[weather.today+{#DATETIME}.wind.azimuth])/22.5))",
+                                "valuemap": {
+                                    "name": "\u041d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f \u0432\u0435\u0442\u0440\u0430"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "\u0412\u0435\u0442\u0435\u0440"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "ddbc707dbf55413880558c820403dfeb",
+                                "name": "+{#DATETIME} \u0434\u043d - \u0412\u0435\u0442\u0435\u0440 (\u043f\u043e\u0440\u044b\u0432\u044b)",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.wind.gusts]",
+                                "delay": "0",
+                                "value_type": "FLOAT",
+                                "units": "!\u043c/\u0441",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.wind_gusts_10m_max[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "\u0412\u0435\u0442\u0435\u0440"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "ae84e4d289de474e899ae0879237a1e2",
+                                "name": "+{#DATETIME} \u0434\u043d - \u0412\u0435\u0442\u0435\u0440 (\u0441\u043a\u043e\u0440\u043e\u0441\u0442\u044c)",
+                                "type": "DEPENDENT",
+                                "key": "openmeteo[weather.today+{#DATETIME}.wind.speed]",
+                                "delay": "0",
+                                "value_type": "FLOAT",
+                                "units": "!\u043c/\u0441",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.daily.wind_speed_10m_max[{#DATETIME}]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "openmeteo[weather.get]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Weather"
+                                    },
+                                    {
+                                        "tag": "DateTime",
+                                        "value": "+{#DATETIME} \u0434\u043d"
+                                    },
+                                    {
+                                        "tag": "Weather Block",
+                                        "value": "\u0412\u0435\u0442\u0435\u0440"
+                                    }
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "openmeteo[weather.get]"
+                        },
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.daily.time"
+                                ]
+                            },
+                            {
+                                "type": "JAVASCRIPT",
+                                "parameters": [
+                                    "value = value.replace(/\\[|\\]/g, '');\nitem = value.split(',');\nconst result = \"{\\\"data\\\":[\";\nif (item[0].length > 0 )\n{\n     for (i = 0; i < item.length; ++i)\n     {\n          result += \"{\\\"{#DATETIME}\\\":\" + i + \"},\";\n     }\n     result = result.slice(0,-1);\n}\nresult += \"]}\";\nreturn result;"
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "macros": [
+                    {
+                        "macro": "{$FORECAST_DAYS}",
+                        "value": "3",
+                        "description": "\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u0434\u043d\u0435\u0439 \u0434\u043b\u044f \u043f\u0440\u043e\u0433\u043d\u043e\u0437\u0430"
+                    },
+                    {
+                        "macro": "{$LATITUDE}",
+                        "value": "59.941546",
+                        "description": "\u0428\u0438\u0440\u043e\u0442\u0430 \u0442\u043e\u0447\u043a\u0438"
+                    },
+                    {
+                        "macro": "{$LONGITUDE}",
+                        "value": "30.304449",
+                        "description": "\u0414\u043e\u043b\u0433\u043e\u0442\u0430 \u0442\u043e\u0447\u043a\u0438"
+                    },
+                    {
+                        "macro": "{$TIMEZONE}",
+                        "value": "Europe/Moscow"
+                    }
+                ],
+                "valuemaps": [
+                    {
+                        "uuid": "ab67792aaa344d368d407cdc490d5dbe",
+                        "name": "Weather Code",
+                        "mappings": [
+                            {
+                                "value": "0",
+                                "newvalue": "\u042f\u0441\u043d\u043e"
+                            },
+                            {
+                                "value": "1",
+                                "newvalue": "\u041f\u0440\u0435\u0438\u043c\u0443\u0449\u0435\u0441\u0442\u0432\u0435\u043d\u043d\u043e \u044f\u0441\u043d\u043e"
+                            },
+                            {
+                                "value": "2",
+                                "newvalue": "\u041f\u0435\u0440\u0435\u043c\u0435\u043d\u043d\u0430\u044f \u043e\u0431\u043b\u0430\u0447\u043d\u043e\u0441\u0442\u044c"
+                            },
+                            {
+                                "value": "3",
+                                "newvalue": "\u041e\u0431\u043b\u0430\u0447\u043d\u043e"
+                            },
+                            {
+                                "value": "45",
+                                "newvalue": "\u0422\u0443\u043c\u0430\u043d"
+                            },
+                            {
+                                "value": "48",
+                                "newvalue": "\u0418\u043d\u0435\u0439"
+                            },
+                            {
+                                "value": "51",
+                                "newvalue": "\u0421\u043b\u0430\u0431\u0430\u044f \u043c\u043e\u0440\u043e\u0441\u044c"
+                            },
+                            {
+                                "value": "53",
+                                "newvalue": "\u041c\u043e\u0440\u043e\u0441\u044c"
+                            },
+                            {
+                                "value": "55",
+                                "newvalue": "\u041f\u043b\u043e\u0442\u043d\u0430\u044f \u043c\u043e\u0440\u043e\u0441\u044c"
+                            },
+                            {
+                                "value": "56",
+                                "newvalue": "\u0421\u043b\u0430\u0431\u0430\u044f \u0438\u0437\u043c\u043e\u0440\u043e\u0437\u044c"
+                            },
+                            {
+                                "value": "57",
+                                "newvalue": "\u041f\u043b\u043e\u0442\u043d\u0430\u044f \u0438\u0437\u043c\u043e\u0440\u043e\u0437\u044c"
+                            },
+                            {
+                                "value": "71",
+                                "newvalue": "\u0421\u043b\u0430\u0431\u044b\u0439 \u0441\u043d\u0435\u0433\u043e\u043f\u0430\u0434"
+                            },
+                            {
+                                "value": "73",
+                                "newvalue": "\u0421\u043d\u0435\u0433\u043e\u043f\u0430\u0434"
+                            },
+                            {
+                                "value": "75",
+                                "newvalue": "\u0421\u0438\u043b\u044c\u043d\u044b\u0439 \u0441\u043d\u0435\u0433\u043e\u043f\u0430\u0434"
+                            },
+                            {
+                                "value": "77",
+                                "newvalue": "\u0421\u043d\u0435\u0436\u043d\u0430\u044f \u043a\u0440\u0443\u043f\u0430"
+                            },
+                            {
+                                "value": "80",
+                                "newvalue": "\u0421\u043b\u0430\u0431\u044b\u0439 \u043b\u0438\u0432\u0435\u043d\u044c"
+                            },
+                            {
+                                "value": "81",
+                                "newvalue": "\u041b\u0438\u0432\u0435\u043d\u044c"
+                            },
+                            {
+                                "value": "82",
+                                "newvalue": "\u0421\u0438\u043b\u044c\u043d\u044b\u0439 \u043b\u0438\u0432\u0435\u043d\u044c"
+                            },
+                            {
+                                "value": "61",
+                                "newvalue": "\u041d\u0435\u0431\u043e\u043b\u044c\u0448\u043e\u0439 \u0434\u043e\u0436\u0434\u044c"
+                            },
+                            {
+                                "value": "63",
+                                "newvalue": "\u0414\u043e\u0436\u0434\u044c"
+                            },
+                            {
+                                "value": "65",
+                                "newvalue": "\u0421\u0438\u043b\u044c\u043d\u044b\u0439 \u0434\u043e\u0436\u0434\u044c"
+                            },
+                            {
+                                "value": "66",
+                                "newvalue": "\u041b\u0435\u0434\u044f\u043d\u043e\u0439 \u0434\u043e\u0436\u0434\u044c"
+                            },
+                            {
+                                "value": "67",
+                                "newvalue": "\u0421\u0438\u043b\u044c\u043d\u044b\u0439 \u043b\u0435\u0434\u044f\u043d\u043e\u0439 \u0434\u043e\u0436\u0434\u044c"
+                            },
+                            {
+                                "value": "85",
+                                "newvalue": "\u041b\u0435\u0434\u044f\u043d\u043e\u0439 \u043b\u0438\u0432\u0435\u043d\u044c"
+                            },
+                            {
+                                "value": "86",
+                                "newvalue": "\u0421\u0438\u043b\u044c\u043d\u044b\u0439 \u043b\u0435\u0434\u044f\u043d\u043e\u0439 \u043b\u0438\u0432\u0435\u043d\u044c"
+                            },
+                            {
+                                "value": "96",
+                                "newvalue": "\u0413\u0440\u043e\u0437\u0430 \u0441 \u0433\u0440\u0430\u0434\u043e\u043c"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "073428e4ef894247b6e834bf8da9eb90",
+                        "name": "\u041d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f \u0432\u0435\u0442\u0440\u0430",
+                        "mappings": [
+                            {
+                                "value": "0",
+                                "newvalue": "\u0421"
+                            },
+                            {
+                                "value": "1",
+                                "newvalue": "\u0421\u0421\u0412"
+                            },
+                            {
+                                "value": "2",
+                                "newvalue": "\u0421\u0412"
+                            },
+                            {
+                                "value": "3",
+                                "newvalue": "\u0412\u0421\u0412"
+                            },
+                            {
+                                "value": "4",
+                                "newvalue": "\u0412"
+                            },
+                            {
+                                "value": "5",
+                                "newvalue": "\u0412\u042e\u0412"
+                            },
+                            {
+                                "value": "6",
+                                "newvalue": "\u042e\u0412"
+                            },
+                            {
+                                "value": "7",
+                                "newvalue": "\u042e\u042e\u0412"
+                            },
+                            {
+                                "value": "8",
+                                "newvalue": "\u042e"
+                            },
+                            {
+                                "value": "9",
+                                "newvalue": "\u042e\u042e\u0417"
+                            },
+                            {
+                                "value": "10",
+                                "newvalue": "\u042e\u0417"
+                            },
+                            {
+                                "value": "11",
+                                "newvalue": "\u0417\u042e\u0417"
+                            },
+                            {
+                                "value": "12",
+                                "newvalue": "\u0417"
+                            },
+                            {
+                                "value": "13",
+                                "newvalue": "\u0417\u0421\u0417"
+                            },
+                            {
+                                "value": "14",
+                                "newvalue": "\u0421\u0417"
+                            },
+                            {
+                                "value": "15",
+                                "newvalue": "\u0421\u0421\u0417"
+                            },
+                            {
+                                "value": "16",
+                                "newvalue": "\u0421"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "efa66c91f81948e5a9956b5f7b96c23b",
+                        "name": "\u041d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f \u0432\u0435\u0442\u0440\u0430 (\u0441\u0442\u0440\u0435\u043b\u043e\u0447\u043a\u0438)",
+                        "mappings": [
+                            {
+                                "value": "0",
+                                "newvalue": "\u2193"
+                            },
+                            {
+                                "value": "1",
+                                "newvalue": "\u2199"
+                            },
+                            {
+                                "value": "2",
+                                "newvalue": "\u2190"
+                            },
+                            {
+                                "value": "3",
+                                "newvalue": "\u2196"
+                            },
+                            {
+                                "value": "4",
+                                "newvalue": "\u2191"
+                            },
+                            {
+                                "value": "5",
+                                "newvalue": "\u2197"
+                            },
+                            {
+                                "value": "6",
+                                "newvalue": "\u2192"
+                            },
+                            {
+                                "value": "7",
+                                "newvalue": "\u2198"
+                            },
+                            {
+                                "value": "8",
+                                "newvalue": "\u2193"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

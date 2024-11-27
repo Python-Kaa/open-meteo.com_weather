@@ -1,0 +1,818 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: bd5c020b77ed47898e1e4c62243ca246
+      template: 'Weather by open-meteo.com'
+      name: 'Weather by open-meteo.com'
+      description: 'https://open-meteo.com/en/docs#current=temperature_2m,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,daylight_duration,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant&wind_speed_unit=ms&timeformat=unixtime&timezone=Europe%2FMoscow&forecast_days=3'
+      groups:
+        - name: Templates
+      items:
+        - uuid: 7cd9666e705a43dea4af85fe1563e65c
+          name: Get-Weather
+          type: HTTP_AGENT
+          key: 'openmeteo[weather.get]'
+          delay: 15m
+          value_type: CHAR
+          trends: '0'
+          url: 'https://api.open-meteo.com/v1/forecast'
+          query_fields:
+            - name: latitude
+              value: '{$LATITUDE}'
+            - name: longitude
+              value: '{$LONGITUDE}'
+            - name: current
+              value: 'temperature_2m,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m'
+            - name: daily
+              value: 'weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,daylight_duration,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant'
+            - name: wind_speed_unit
+              value: ms
+            - name: timeformat
+              value: unixtime
+            - name: timezone
+              value: '{$TIMEZONE}'
+            - name: forecast_days
+              value: '{$FORECAST_DAYS}'
+          tags:
+            - tag: Application
+              value: Weather
+        - uuid: 0119ed0e2dee43788db4e49c86e5623e
+          name: 'Сейчас - Облачность'
+          type: DEPENDENT
+          key: 'openmeteo[weather.now.cloud]'
+          delay: '0'
+          value_type: FLOAT
+          units: '%'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.current.cloud_cover
+          master_item:
+            key: 'openmeteo[weather.get]'
+          tags:
+            - tag: Application
+              value: Weather
+            - tag: DateTime
+              value: Сейчас
+            - tag: 'Weather Block'
+              value: General
+        - uuid: 014fb7806227420491b3de826d8cac87
+          name: 'Сейчас - Погода'
+          type: DEPENDENT
+          key: 'openmeteo[weather.now.code]'
+          delay: '0'
+          valuemap:
+            name: 'Weather Code'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.current.weather_code
+          master_item:
+            key: 'openmeteo[weather.get]'
+          tags:
+            - tag: Application
+              value: Weather
+            - tag: DateTime
+              value: Сейчас
+            - tag: 'Weather Block'
+              value: General
+        - uuid: f3f130c780da4d05ad446b931983222f
+          name: 'Сейчас - Влажность'
+          type: DEPENDENT
+          key: 'openmeteo[weather.now.humidity]'
+          delay: '0'
+          value_type: FLOAT
+          units: '%'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.current.relative_humidity_2m
+          master_item:
+            key: 'openmeteo[weather.get]'
+          tags:
+            - tag: Application
+              value: Weather
+            - tag: DateTime
+              value: Сейчас
+            - tag: 'Weather Block'
+              value: General
+        - uuid: 3382d47fdb794d34a29fc97eb8a6355a
+          name: 'Сейчас - Осадки (дождь)'
+          type: DEPENDENT
+          key: 'openmeteo[weather.now.precipitation.rain]'
+          delay: '0'
+          value_type: FLOAT
+          units: '!мм'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.current.rain
+          master_item:
+            key: 'openmeteo[weather.get]'
+          tags:
+            - tag: Application
+              value: Weather
+            - tag: DateTime
+              value: Сейчас
+            - tag: 'Weather Block'
+              value: Осадки
+        - uuid: d254a03d0b81495384113139fe5f7c0f
+          name: 'Сейчас - Осадки (ливень)'
+          type: DEPENDENT
+          key: 'openmeteo[weather.now.precipitation.showers]'
+          delay: '0'
+          value_type: FLOAT
+          units: '!мм'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.current.showers
+          master_item:
+            key: 'openmeteo[weather.get]'
+          tags:
+            - tag: Application
+              value: Weather
+            - tag: DateTime
+              value: Сейчас
+            - tag: 'Weather Block'
+              value: Осадки
+        - uuid: b5da6f7bd8764e0c814bc06833f22c1a
+          name: 'Сейчас - Осадки (снег)'
+          type: DEPENDENT
+          key: 'openmeteo[weather.now.precipitation.snowfall]'
+          delay: '0'
+          value_type: FLOAT
+          units: '!см'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.current.snowfall
+          master_item:
+            key: 'openmeteo[weather.get]'
+          tags:
+            - tag: Application
+              value: Weather
+            - tag: DateTime
+              value: Сейчас
+            - tag: 'Weather Block'
+              value: Осадки
+        - uuid: 8643e01beb5e4ac69f9626829dc8917e
+          name: 'Сейчас - Осадки'
+          type: DEPENDENT
+          key: 'openmeteo[weather.now.precipitation.sum]'
+          delay: '0'
+          value_type: FLOAT
+          units: '!мм'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.current.precipitation
+          master_item:
+            key: 'openmeteo[weather.get]'
+          tags:
+            - tag: Application
+              value: Weather
+            - tag: DateTime
+              value: Сейчас
+            - tag: 'Weather Block'
+              value: Осадки
+        - uuid: 05bf6848bfb64a76b42d73812a577252
+          name: 'Сейчас - Давление'
+          type: DEPENDENT
+          key: 'openmeteo[weather.now.pressure.msl]'
+          delay: '0'
+          value_type: FLOAT
+          units: '!мм рт ст'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.current.pressure_msl
+            - type: MULTIPLIER
+              parameters:
+                - '0.75006375541921'
+          master_item:
+            key: 'openmeteo[weather.get]'
+          tags:
+            - tag: Application
+              value: Weather
+            - tag: DateTime
+              value: Сейчас
+            - tag: 'Weather Block'
+              value: General
+        - uuid: cdff1fe3cd704b6c892f2888c17bccae
+          name: 'Сейчас - Температура'
+          type: DEPENDENT
+          key: 'openmeteo[weather.now.temperature]'
+          delay: '0'
+          value_type: FLOAT
+          units: °C
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.current.temperature_2m
+          master_item:
+            key: 'openmeteo[weather.get]'
+          tags:
+            - tag: Application
+              value: Weather
+            - tag: DateTime
+              value: Сейчас
+            - tag: 'Weather Block'
+              value: Температура
+        - uuid: e1da23757bb2423bbd26031d5ab8bffc
+          name: 'Сейчас - Ветер (азимут)'
+          type: DEPENDENT
+          key: 'openmeteo[weather.now.wind.azimuth]'
+          delay: '0'
+          units: °
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.current.wind_direction_10m
+          master_item:
+            key: 'openmeteo[weather.get]'
+          tags:
+            - tag: Application
+              value: Weather
+            - tag: DateTime
+              value: Сейчас
+            - tag: 'Weather Block'
+              value: Ветер
+        - uuid: 4722ad868831457cb162c1fec3a428d7
+          name: 'Сейчас - Ветер (направление)'
+          type: CALCULATED
+          key: 'openmeteo[weather.now.wind.direction.arrow]'
+          delay: 15m
+          params: 'floor((last(//openmeteo[weather.now.wind.azimuth])/45))'
+          valuemap:
+            name: 'Направления ветра (стрелочки)'
+          tags:
+            - tag: Application
+              value: Weather
+            - tag: DateTime
+              value: Сейчас
+            - tag: 'Weather Block'
+              value: Ветер
+        - uuid: 723583b08115493eb463aeb19de70996
+          name: 'Сейчас - Ветер (направление)'
+          type: CALCULATED
+          key: 'openmeteo[weather.now.wind.direction.direction]'
+          delay: 15m
+          status: DISABLED
+          params: 'floor((last(//openmeteo[weather.now.wind.azimuth])/22.5))'
+          valuemap:
+            name: 'Направления ветра'
+          tags:
+            - tag: Application
+              value: Weather
+            - tag: DateTime
+              value: Сейчас
+            - tag: 'Weather Block'
+              value: Ветер
+        - uuid: 9374a8374a16433cacdaa67ef2082d8a
+          name: 'Сейчас - Ветер (порывы)'
+          type: DEPENDENT
+          key: 'openmeteo[weather.now.wind.gusts]'
+          delay: '0'
+          value_type: FLOAT
+          units: '!м/с'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.current.wind_gusts_10m
+          master_item:
+            key: 'openmeteo[weather.get]'
+          tags:
+            - tag: Application
+              value: Weather
+            - tag: DateTime
+              value: Сейчас
+            - tag: 'Weather Block'
+              value: Ветер
+        - uuid: 872982789acf45f0bf42ad9e424c7c05
+          name: 'Сейчас - Ветер (скорость)'
+          type: DEPENDENT
+          key: 'openmeteo[weather.now.wind.speed]'
+          delay: '0'
+          value_type: FLOAT
+          units: '!м/с'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.current.wind_speed_10m
+          master_item:
+            key: 'openmeteo[weather.get]'
+          tags:
+            - tag: Application
+              value: Weather
+            - tag: DateTime
+              value: Сейчас
+            - tag: 'Weather Block'
+              value: Ветер
+      discovery_rules:
+        - uuid: 422c8c156863438ba0a44100a6ce655a
+          name: 'Daily Weather Discovery'
+          type: DEPENDENT
+          key: 'openmeteo[weather.discover]'
+          delay: '0'
+          lifetime: 0s
+          item_prototypes:
+            - uuid: 9264114e3a124f53b5f69eedcb7288be
+              name: '+{#DATETIME} дн - Погода'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.code]'
+              delay: '0'
+              valuemap:
+                name: 'Weather Code'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.weather_code[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: General
+            - uuid: da616efcd5414b8eae205cc086467ea6
+              name: '+{#DATETIME} дн - Погода на дату'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.date]'
+              delay: '0'
+              units: unixtime
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.time[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: General
+            - uuid: c8c695cbd2534337be13b73a5720ce72
+              name: '+{#DATETIME} дн - Продолжительность дня'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.duration]'
+              delay: '0'
+              value_type: FLOAT
+              units: s
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.daylight_duration[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: General
+            - uuid: 872cfe05fb134dc59b112bc7dabbe5d9
+              name: '+{#DATETIME} дн - Осадки (продолжительность)'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.precipitation.hours]'
+              delay: '0'
+              value_type: FLOAT
+              units: '!ч'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.precipitation_hours[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: Осадки
+            - uuid: 7c5d6f0ac66a456aaff4f6f7db68ef0b
+              name: '+{#DATETIME} дн - Осадки (вероятность)'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.precipitation.probability]'
+              delay: '0'
+              value_type: FLOAT
+              units: '%'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.precipitation_probability_max[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: Осадки
+            - uuid: feb295c5077043348af4ff2e9e8e5832
+              name: '+{#DATETIME} дн - Осадки (дождь)'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.precipitation.rain]'
+              delay: '0'
+              value_type: FLOAT
+              units: '!мм'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.rain_sum[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: Осадки
+            - uuid: 841856ef1fe144d387f5f0c9a8d49eeb
+              name: '+{#DATETIME} дн - Осадки (ливень)'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.precipitation.showers]'
+              delay: '0'
+              value_type: FLOAT
+              units: '!мм'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.showers_sum[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: Осадки
+            - uuid: 2ab5dd98f9b04c179de09aaf6949f24c
+              name: '+{#DATETIME} дн - Осадки (снег)'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.precipitation.snowfall]'
+              delay: '0'
+              value_type: FLOAT
+              units: '!мм'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.snowfall_sum[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: Осадки
+            - uuid: 714b0f44416740798ee7caad865ad8c0
+              name: '+{#DATETIME} дн - Осадки (суммарно)'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.precipitation.sum]'
+              delay: '0'
+              value_type: FLOAT
+              units: '!мм'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.precipitation_sum[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: Осадки
+            - uuid: 57794499c8d34d169eaef2a53cad3a1f
+              name: '+{#DATETIME} дн - Рассвет'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.sunrise]'
+              delay: '0'
+              units: unixtime
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.sunrise[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: General
+            - uuid: dfd8cf74265d4f279b5a6a4d438596ae
+              name: '+{#DATETIME} дн - Закат'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.sunset]'
+              delay: '0'
+              units: unixtime
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.sunset[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: General
+            - uuid: 7fa66d89f9904a719c66b33087d9942b
+              name: '+{#DATETIME} дн - Температура MAX'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.temperature.max]'
+              delay: '0'
+              value_type: FLOAT
+              units: °C
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.temperature_2m_max[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: Температура
+            - uuid: 1d8d1670a9124dfc96ac59d2149d9676
+              name: '+{#DATETIME} дн - Температура MIN'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.temperature.min]'
+              delay: '0'
+              value_type: FLOAT
+              units: °C
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.temperature_2m_min[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: Температура
+            - uuid: 9cd9b52d7f83480f9788478877bccff5
+              name: '+{#DATETIME} дн - Ветер (азимут)'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.wind.azimuth]'
+              delay: '0'
+              units: °
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.wind_direction_10m_dominant[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: Ветер
+            - uuid: 40ed7fc1f200493fae22ce04d41a2af3
+              name: '+{#DATETIME} дн - Ветер (направление)'
+              type: CALCULATED
+              key: 'openmeteo[weather.today+{#DATETIME}.wind.direction.arrow]'
+              delay: '15'
+              params: 'floor((last(//openmeteo[weather.today+{#DATETIME}.wind.azimuth])/45))'
+              valuemap:
+                name: 'Направления ветра (стрелочки)'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: Ветер
+            - uuid: a30e2c6cedd84708b49556eb6463b9ec
+              name: '+{#DATETIME} дн - Ветер (направление)'
+              type: CALCULATED
+              key: 'openmeteo[weather.today+{#DATETIME}.wind.direction]'
+              delay: '15'
+              status: DISABLED
+              discover: NO_DISCOVER
+              params: 'floor((last(//openmeteo[weather.today+{#DATETIME}.wind.azimuth])/22.5))'
+              valuemap:
+                name: 'Направления ветра'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: Ветер
+            - uuid: ddbc707dbf55413880558c820403dfeb
+              name: '+{#DATETIME} дн - Ветер (порывы)'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.wind.gusts]'
+              delay: '0'
+              value_type: FLOAT
+              units: '!м/с'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.wind_gusts_10m_max[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: Ветер
+            - uuid: ae84e4d289de474e899ae0879237a1e2
+              name: '+{#DATETIME} дн - Ветер (скорость)'
+              type: DEPENDENT
+              key: 'openmeteo[weather.today+{#DATETIME}.wind.speed]'
+              delay: '0'
+              value_type: FLOAT
+              units: '!м/с'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.daily.wind_speed_10m_max[{#DATETIME}]'
+              master_item:
+                key: 'openmeteo[weather.get]'
+              tags:
+                - tag: Application
+                  value: Weather
+                - tag: DateTime
+                  value: '+{#DATETIME} дн'
+                - tag: 'Weather Block'
+                  value: Ветер
+          master_item:
+            key: 'openmeteo[weather.get]'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.daily.time
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  value = value.replace(/\[|\]/g, '');
+                  item = value.split(',');
+                  const result = "{\"data\":[";
+                  if (item[0].length > 0 )
+                  {
+                       for (i = 0; i < item.length; ++i)
+                       {
+                            result += "{\"{#DATETIME}\":" + i + "},";
+                       }
+                       result = result.slice(0,-1);
+                  }
+                  result += "]}";
+                  return result;
+      macros:
+        - macro: '{$FORECAST_DAYS}'
+          value: '3'
+          description: 'Количество дней для прогноза'
+        - macro: '{$LATITUDE}'
+          value: '59.941546'
+          description: 'Широта точки'
+        - macro: '{$LONGITUDE}'
+          value: '30.304449'
+          description: 'Долгота точки'
+        - macro: '{$TIMEZONE}'
+          value: Europe/Moscow
+      valuemaps:
+        - uuid: ab67792aaa344d368d407cdc490d5dbe
+          name: 'Weather Code'
+          mappings:
+            - value: '0'
+              newvalue: Ясно
+            - value: '1'
+              newvalue: 'Преимущественно ясно'
+            - value: '2'
+              newvalue: 'Переменная облачность'
+            - value: '3'
+              newvalue: Облачно
+            - value: '45'
+              newvalue: Туман
+            - value: '48'
+              newvalue: Иней
+            - value: '51'
+              newvalue: 'Слабая морось'
+            - value: '53'
+              newvalue: Морось
+            - value: '55'
+              newvalue: 'Плотная морось'
+            - value: '56'
+              newvalue: 'Слабая изморозь'
+            - value: '57'
+              newvalue: 'Плотная изморозь'
+            - value: '71'
+              newvalue: 'Слабый снегопад'
+            - value: '73'
+              newvalue: Снегопад
+            - value: '75'
+              newvalue: 'Сильный снегопад'
+            - value: '77'
+              newvalue: 'Снежная крупа'
+            - value: '80'
+              newvalue: 'Слабый ливень'
+            - value: '81'
+              newvalue: Ливень
+            - value: '82'
+              newvalue: 'Сильный ливень'
+            - value: '61'
+              newvalue: 'Небольшой дождь'
+            - value: '63'
+              newvalue: Дождь
+            - value: '65'
+              newvalue: 'Сильный дождь'
+            - value: '66'
+              newvalue: 'Ледяной дождь'
+            - value: '67'
+              newvalue: 'Сильный ледяной дождь'
+            - value: '85'
+              newvalue: 'Ледяной ливень'
+            - value: '86'
+              newvalue: 'Сильный ледяной ливень'
+            - value: '96'
+              newvalue: 'Гроза с градом'
+        - uuid: 073428e4ef894247b6e834bf8da9eb90
+          name: 'Направления ветра'
+          mappings:
+            - value: '0'
+              newvalue: С
+            - value: '1'
+              newvalue: ССВ
+            - value: '2'
+              newvalue: СВ
+            - value: '3'
+              newvalue: ВСВ
+            - value: '4'
+              newvalue: В
+            - value: '5'
+              newvalue: ВЮВ
+            - value: '6'
+              newvalue: ЮВ
+            - value: '7'
+              newvalue: ЮЮВ
+            - value: '8'
+              newvalue: Ю
+            - value: '9'
+              newvalue: ЮЮЗ
+            - value: '10'
+              newvalue: ЮЗ
+            - value: '11'
+              newvalue: ЗЮЗ
+            - value: '12'
+              newvalue: З
+            - value: '13'
+              newvalue: ЗСЗ
+            - value: '14'
+              newvalue: СЗ
+            - value: '15'
+              newvalue: ССЗ
+            - value: '16'
+              newvalue: С
+        - uuid: efa66c91f81948e5a9956b5f7b96c23b
+          name: 'Направления ветра (стрелочки)'
+          mappings:
+            - value: '0'
+              newvalue: ↓
+            - value: '1'
+              newvalue: ↙
+            - value: '2'
+              newvalue: ←
+            - value: '3'
+              newvalue: ↖
+            - value: '4'
+              newvalue: ↑
+            - value: '5'
+              newvalue: ↗
+            - value: '6'
+              newvalue: →
+            - value: '7'
+              newvalue: ↘
+            - value: '8'
+              newvalue: ↓
